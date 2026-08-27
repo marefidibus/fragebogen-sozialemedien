@@ -281,20 +281,88 @@
       font-size: 0.9rem;
     }
 
-    @media (max-width: 600px) {
-      body {
-        font-size: 17px;
-      }
+    @media print {
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+    line-height: 1.35;
+  }
 
-      .karte,
-      fieldset {
-        padding: 16px;
-      }
+  /* Nicht benötigte Bereiche ausblenden */
+  header,
+  .fortschritt,
+  form,
+  footer,
+  main > section.karte:not(#auswertung),
+  #auswertung .button-bereich {
+    display: none !important;
+  }
 
-      .antwort {
-        padding: 10px;
-      }
-    }
+  main {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Nur das Feedback anzeigen */
+  #auswertung {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: white;
+  }
+
+  #auswertung h2 {
+    color: black;
+    font-size: 18pt;
+    margin: 0 0 12pt;
+  }
+
+  #auswertung h3 {
+    font-size: 13pt;
+    margin-bottom: 6pt;
+  }
+
+  .ergebnis,
+  .zusammenfassung {
+    background: white !important;
+    color: black;
+    border: 1px solid #999;
+    border-left: 5px solid #555;
+    box-shadow: none;
+    padding: 8pt;
+    margin-bottom: 10pt;
+    break-inside: avoid;
+  }
+
+  .ergebnis strong {
+    color: black;
+  }
+
+  .ergebnis ul,
+  .zusammenfassung ul {
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+  }
+
+  .kleiner-text,
+  .hint {
+    color: #333 !important;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+  }
+
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+}
   </style>
 </head>
 
