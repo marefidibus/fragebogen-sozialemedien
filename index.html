@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umfrage: Soziale Medien</title>
+
+  <style>
+    :root {
+      --blau: #185abd;
+      --hellblau: #eaf2ff;
+      --gruen: #197a45;
+      --hellgruen: #e8f6ed;
+      --orange: #a85a00;
+      --hellorange: #fff2df;
+      --rot: #a32626;
+      --hellrot: #ffe8e8;
+      --dunkel: #202124;
+      --grau: #5f6368;
+      --rand: #c9cdd3;
+      --hintergrund: #f7f8fa;
+      --weiss: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--dunkel);
+      background: var(--hintergrund);
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    header {
+      background: var(--blau);
+      color: var(--weiss);
+      padding: 28px 20px;
+    }
+
+    header .kopf {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--blau);
+    }
+
+    h3 {
+      margin-bottom: 8px;
+    }
+
+    .untertitel {
+      margin: 0;
+      max-width: 750px;
+      font-size: 1.1rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    .karte {
+      background: var(--weiss);
+      border: 1px solid var(--rand);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .hinweis {
+      background: var(--hellblau);
+      border-left: 6px solid var(--blau);
+      padding: 16px;
+      margin-bottom: 22px;
+    }
+
+    .kleiner-text {
+      color: var(--grau);
+      font-size: 0.9rem;
+    }
+
+    .fortschritt {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--weiss);
+      border-bottom: 1px solid var(--rand);
+      padding: 10px 16px;
+      margin: 0 -16px 24px;
+    }
+
+    .fortschritt-innen {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    progress {
+      width: 100%;
+      height: 20px;
+      accent-color: var(--blau);
+    }
+
+    fieldset {
+      border: 2px solid var(--rand);
+      border-radius: 12px;
+      padding: 18px;
+      margin: 0 0 20px;
+      background: var(--weiss);
+    }
+
+    legend {
+      font-weight: bold;
+      padding: 0 8px;
+      font-size: 1.1rem;
+    }
+
+    .frage-hinweis {
+      color: var(--grau);
+      margin: 2px 0 14px;
+      font-size: 0.95rem;
+    }
+
+    .antworten {
+      display: grid;
+      gap: 10px;
+    }
+
+    .antwort {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border: 2px solid var(--rand);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .antwort:hover,
+    .antwort:focus-within {
+      border-color: var(--blau);
+      background: var(--hellblau);
+    }
+
+    .antwort input {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--blau);
+    }
+
+    .antwort label {
+      cursor: pointer;
+      flex: 1;
+    }
+
+    select,
+    input[type="text"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px;
+      font: inherit;
+      border: 2px solid var(--rand);
+      border-radius: 8px;
+      background: var(--weiss);
+    }
+
+    .button-bereich {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 14px 22px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primaer {
+      background: var(--blau);
+      color: var(--weiss);
+    }
+
+    .primaer:hover {
+      background: #104a9d;
+    }
+
+    .sekundaer {
+      background: #e5e7eb;
+      color: var(--dunkel);
+    }
+
+    button:focus,
+    input:focus,
+    select:focus {
+      outline: 4px solid #9cc3ff;
+      outline-offset: 2px;
+    }
+
+    #auswertung {
+      display: none;
+    }
+
+    .ergebnis {
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-left: 7px solid;
+    }
+
+    .positiv {
+      background: var(--hellgruen);
+      border-color: var(--gruen);
+    }
+
+    .achtung {
+      background: var(--hellorange);
+      border-color: var(--orange);
+    }
+
+    .kritisch {
+      background: var(--hellrot);
+      border-color: var(--rot);
+    }
+
+    .ergebnis strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .zusammenfassung {
+      background: #f1f3f4;
+      padding: 18px;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+
+    .zaehler {
+      font-weight: bold;
+      color: var(--blau);
+      margin-bottom: 8px;
+    }
+
+    .vertraulich {
+      font-size: 0.9rem;
+      color: var(--grau);
+      margin-top: 16px;
+    }
+
+    footer {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+      color: var(--grau);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        font-size: 17px;
+      }
+
+      .karte,
+      fieldset {
+        padding: 16px;
+      }
+
+      .antwort {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="kopf">
+      <h1>Umfrage: Soziale Medien</h1>
+      <p class="untertitel">
+        Deine Meinung und dein Alltag mit TikTok, Instagram, YouTube,
+        WhatsApp und anderen sozialen Medien.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <div class="fortschritt">
+      <div class="fortschritt-innen">
+        <div class="zaehler" id="fortschrittText">
+          Noch keine Frage beantwortet
+        </div>
+        <progress id="fortschritt" value="0" max="13"></progress>
+      </div>
+    </div>
+
+    <section class="karte">
+      <h2>Wichtige Informationen</h2>
+
+      <div class="hinweis">
+        <strong>Die Umfrage ist freiwillig.</strong>
+        <p>
+          Du musst deinen Namen nicht nennen. Es gibt keine falschen Antworten.
+          Antworte bitte so, wie es bei dir wirklich ist.
+        </p>
+      </div>
+
+      <p>
+        Die Umfrage dauert ungefähr 5 Minuten. Die Antworten werden nur für
+        eine schulische Auswertung verwendet.
+      </p>
+
+      <label for="alter"><strong>Wie alt bist du?</strong></label>
+      <select id="alter" name="alter">
+        <option value="">Bitte auswählen</option>
+        <option value="15">15 Jahre</option>
+        <option value="16">16 Jahre</option>
+        <option value="17">17 Jahre</option>
+        <option value="18">18 Jahre</option>
+        <option value="19">19 Jahre</option>
+        <option value="20plus">20 Jahre oder älter</option>
+        <option value="keine-angabe">Keine Angabe</option>
+      </select>
+    </section>
+
+    <form id="umfrageForm">
+      <fieldset>
+        <legend>1. Wie oft nutzt du soziale Medien?</legend>
+        <p class="frage-hinweis">
+          Zum Beispiel TikTok, Instagram, Snapchat, YouTube oder WhatsApp.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q1a" name="q1" value="1" required>
+            <label for="q1a">Weniger als 1 Stunde am Tag</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q1b" name="q1" value="2">
+            <label for="q1b">1 bis 2 Stunden am Tag</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q1c" name="q1" value="3">
+            <label for="q1c">2 bis 4 Stunden am Tag</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q1d" name="q1" value="4">
+            <label for="q1d">Mehr als 4 Stunden am Tag</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>2. Welche Angebote nutzt du regelmäßig?</legend>
+        <p class="frage-hinweis">
+          Mehrere Antworten sind möglich.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="checkbox" id="q2a" name="q2" value="TikTok">
+            <label for="q2a">TikTok</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2b" name="q2" value="Instagram">
+            <label for="q2b">Instagram</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2c" name="q2" value="YouTube">
+            <label for="q2c">YouTube</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2d" name="q2" value="WhatsApp">
+            <label for="q2d">WhatsApp</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2e" name="q2" value="Snapchat">
+            <label for="q2e">Snapchat</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2f" name="q2" value="Andere">
+            <label for="q2f">Andere Angebote</label>
+          </div>
+          <div class="antwort">
+            <input type="checkbox" id="q2g" name="q2" value="Keine">
+            <label for="q2g">Ich nutze keine sozialen Medien</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>3. Wofür nutzt du soziale Medien am meisten?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q3a" name="q3" value="Kontakt" required>
+            <label for="q3a">Kontakt mit Freunden und Familie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q3b" name="q3" value="Unterhaltung">
+            <label for="q3b">Unterhaltung und Videos</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q3c" name="q3" value="Information">
+            <label for="q3c">Informationen und Nachrichten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q3d" name="q3" value="Lernen">
+            <label for="q3d">Lernen und Schule</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q3e" name="q3" value="Kreativ">
+            <label for="q3e">Eigene Bilder, Videos oder Beiträge erstellen</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>4. Wie häufig informierst du dich dort über aktuelle Themen?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q4a" name="q4" value="1" required>
+            <label for="q4a">Nie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q4b" name="q4" value="2">
+            <label for="q4b">Selten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q4c" name="q4" value="3">
+            <label for="q4c">Manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q4d" name="q4" value="4">
+            <label for="q4d">Oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>5. Prüfst du, ob eine Information stimmen kann?</legend>
+        <p class="frage-hinweis">
+          Zum Beispiel durch mehrere Quellen, Nachrichten-Seiten oder Faktenchecks.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q5a" name="q5" value="1" required>
+            <label for="q5a">Nie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q5b" name="q5" value="2">
+            <label for="q5b">Selten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q5c" name="q5" value="3">
+            <label for="q5c">Manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q5d" name="q5" value="4">
+            <label for="q5d">Oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>6. Wie häufig stellst du eigene Inhalte online?</legend>
+        <p class="frage-hinweis">
+          Zum Beispiel Fotos, Videos, Kommentare oder Stories.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q6a" name="q6" value="1" required>
+            <label for="q6a">Nie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q6b" name="q6" value="2">
+            <label for="q6b">Selten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q6c" name="q6" value="3">
+            <label for="q6c">Manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q6d" name="q6" value="4">
+            <label for="q6d">Oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>7. Wie sehr achtest du auf deine privaten Daten?</legend>
+        <p class="frage-hinweis">
+          Zum Beispiel Adresse, Schule, Standort, Telefonnummer oder Fotos.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q7a" name="q7" value="4" required>
+            <label for="q7a">Ich achte sehr darauf.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q7b" name="q7" value="3">
+            <label for="q7b">Ich achte meistens darauf.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q7c" name="q7" value="2">
+            <label for="q7c">Ich achte manchmal darauf.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q7d" name="q7" value="1">
+            <label for="q7d">Ich achte kaum darauf.</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>8. Wie häufig fühlst du dich durch soziale Medien unter Druck?</legend>
+        <p class="frage-hinweis">
+          Zum Beispiel durch Likes, Antworten, Aussehen oder den Vergleich mit anderen.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q8a" name="q8" value="1" required>
+            <label for="q8a">Nie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q8b" name="q8" value="2">
+            <label for="q8b">Selten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q8c" name="q8" value="3">
+            <label for="q8c">Manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q8d" name="q8" value="4">
+            <label for="q8d">Oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>9. Stören soziale Medien manchmal deinen Schlaf?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q9a" name="q9" value="1" required>
+            <label for="q9a">Nie</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q9b" name="q9" value="2">
+            <label for="q9b">Selten</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q9c" name="q9" value="3">
+            <label for="q9c">Manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q9d" name="q9" value="4">
+            <label for="q9d">Oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>10. Hast du schon einmal beleidigende Inhalte erlebt?</legend>
+        <p class="frage-hinweis">
+          Gemeint sind Beleidigungen, Ausgrenzung, Drohungen oder Cybermobbing.
+        </p>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q10a" name="q10" value="1" required>
+            <label for="q10a">Nein</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q10b" name="q10" value="2">
+            <label for="q10b">Ja, einmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q10c" name="q10" value="3">
+            <label for="q10c">Ja, manchmal</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q10d" name="q10" value="4">
+            <label for="q10d">Ja, oft</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>11. Was machst du, wenn dich ein Inhalt verletzt?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q11a" name="q11" value="4" required>
+            <label for="q11a">Ich blockiere oder melde die Person.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q11b" name="q11" value="3">
+            <label for="q11b">Ich spreche mit einer vertrauten Person.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q11c" name="q11" value="2">
+            <label for="q11c">Ich ignoriere den Inhalt.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q11d" name="q11" value="1">
+            <label for="q11d">Ich weiß nicht, was ich tun kann.</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>12. Gibt es Regeln für deine Nutzung?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q12a" name="q12" value="4" required>
+            <label for="q12a">Ja, und sie helfen mir.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q12b" name="q12" value="3">
+            <label for="q12b">Ja, aber ich halte sie nicht immer ein.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q12c" name="q12" value="2">
+            <label for="q12c">Es gibt wenige Regeln.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q12d" name="q12" value="1">
+            <label for="q12d">Nein, es gibt keine Regeln.</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>13. Was ist für dich das Gute an sozialen Medien?</legend>
+
+        <div class="antworten">
+          <div class="antwort">
+            <input type="radio" id="q13a" name="q13" value="Kontakt" required>
+            <label for="q13a">Ich kann mit anderen Kontakt halten.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q13b" name="q13" value="Information">
+            <label for="q13b">Ich finde Informationen.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q13c" name="q13" value="Kreativ">
+            <label for="q13c">Ich kann kreativ sein.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q13d" name="q13" value="Unterhaltung">
+            <label for="q13d">Ich habe Spaß und Unterhaltung.</label>
+          </div>
+          <div class="antwort">
+            <input type="radio" id="q13e" name="q13" value="Nichts">
+            <label for="q13e">Ich sehe kaum etwas Gutes daran.</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="karte">
+        <div class="button-bereich">
+          <button class="primaer" type="submit">
+            Umfrage auswerten
+          </button>
+          <button class="sekundaer" type="reset" id="zuruecksetzen">
+            Antworten löschen
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <section id="auswertung" class="karte" aria-live="polite">
+      <h2>Feedback für die interviewende Person</h2>
+
+      <div id="gesamtFeedback"></div>
+
+      <div class="zusammenfassung">
+        <h3>Hinweis zur Einordnung</h3>
+        <p>
+          Die JIM-Studie befragt Jugendliche in Deutschland. Diese Umfrage
+          bezieht sich auf eine kleinere Gruppe an einer Förderschule.
+          Deshalb sind die Ergebnisse nicht repräsentativ.
+        </p>
+        <p>
+          Die Rückmeldung zeigt persönliche Tendenzen. Sie ist kein Test und
+          keine Diagnose.
+        </p>
+      </div>
+
+      <div class="zusammenfassung">
+        <h3>Gesprächsimpulse</h3>
+        <ul id="gespraech"></ul>
+      </div>
+
+      <div class="zusammenfassung">
+        <h3>Referenz</h3>
+        <p>
+          Die Fragen orientieren sich an Themen der aktuellen JIM-Studie des
+          Medienpädagogischen Forschungsverbundes Südwest.
+        </p>
+        <p>
+          Weitere Informationen:
+          <a href="https://www.mpfs.de/studien/jim-studie/" target="_blank" rel="noopener">
+            www.mpfs.de/studien/jim-studie/
+          </a>
+        </p>
+        <p class="kleiner-text">
+          Die Vergleichslogik in dieser Seite nutzt qualitative Trendlinien:
+          hohe tägliche Nutzung, hohe Bedeutung von Video- und
+          Kommunikationsangeboten, Informationssuche über soziale Medien sowie
+          die Bedeutung von Datenschutz, Schlaf und Wohlbefinden.
+        </p>
+      </div>
+
+      <div class="button-bereich">
+        <button class="primaer" type="button" onclick="window.print()">
+          Feedback drucken
+        </button>
+        <button class="sekundaer" type="button" onclick="neueUmfrage()">
+          Neue Umfrage
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Anonyme Schulumfrage zum Umgang mit sozialen Medien.
+      Keine personenbezogenen Daten werden gespeichert.
+    </p>
+  </footer>
+
+  <script>
+    const formular = document.getElementById("umfrageForm");
+    const auswertung = document.getElementById("auswertung");
+    const gesamtFeedback = document.getElementById("gesamtFeedback");
+    const gespraech = document.getElementById("gespraech");
+    const fortschritt = document.getElementById("fortschritt");
+    const fortschrittText = document.getElementById("fortschrittText");
+
+    const frageAnzahl = 13;
+
+    function wert(name) {
+      const element = document.querySelector(`input[name="${name}"]:checked`);
+      return element ? element.value : null;
+    }
+
+    function aktualisiereFortschritt() {
+      let beantwortet = 0;
+
+      for (let i = 1; i <= frageAnzahl; i++) {
+        const radio = document.querySelector(`input[name="q${i}"]:checked`);
+        const checkbox = document.querySelectorAll(`input[name="q${i}"]:checked`);
+
+        if (radio || checkbox.length > 0) {
+          beantwortet++;
+        }
+      }
+
+      fortschritt.value = beantwortet;
+      fortschrittText.textContent =
+        `${beantwortet} von ${frageAnzahl} Fragen beantwortet`;
+    }
+
+    document.querySelectorAll("input").forEach((element) => {
+      element.addEventListener("change", aktualisiereFortschritt);
+    });
+
+    formular.addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const q1 = Number(wert("q1"));
+      const q4 = Number(wert("q4"));
+      const q5 = Number(wert("q5"));
+      const q6 = Number(wert("q6"));
+      const q7 = Number(wert("q7"));
+      const q8 = Number(wert("q8"));
+      const q9 = Number(wert("q9"));
+      const q10 = Number(wert("q10"));
+      const q11 = Number(wert("q11"));
+      const q12 = Number(wert("q12"));
+
+      const positive = [];
+      const achten = [];
+      const kritisch = [];
+      const gespraechsfragen = [];
+
+      /*
+        Die folgenden Werte sind Orientierungswerte.
+        Sie bilden keine exakten Prozentwerte der JIM-Studie ab.
+      */
+
+      if (q1 <= 3) {
+        positive.push(
+          "Die tägliche Nutzungszeit liegt nicht im besonders hohen Bereich."
+        );
+      } else {
+        kritisch.push(
+          "Die tägliche Nutzungszeit liegt bei mehr als vier Stunden. Das kann auf eine sehr starke Einbindung sozialer Medien hinweisen. Es sollte gemeinsam über Pausen, Schlaf und andere Aktivitäten gesprochen werden."
+        );
+        gespraechsfragen.push(
+          "Welche Apps nehmen besonders viel Zeit ein?"
+        );
+      }
+
+      if (q4 >= 3) {
+        positive.push(
+          "Soziale Medien werden auch zur Information über aktuelle Themen genutzt."
+        );
+      }
+
+      if (q5 >= 3) {
+        positive.push(
+          "Informationen werden zumindest manchmal überprüft. Das ist eine wichtige Fähigkeit gegen Falschmeldungen."
+        );
+      } else {
+        kritisch.push(
+          "Informationen werden selten oder nie überprüft. Hier besteht ein erhöhtes Risiko, dass Falschmeldungen oder Werbung für wahr gehalten werden."
+        );
+        gespraechsfragen.push(
+          "Welche Quellen könnten beim Prüfen einer Information helfen?"
+        );
+      }
+
+      if (q6 >= 3) {
+        positive.push(
+          "Es werden eigene Inhalte erstellt. Das zeigt eine aktive und kreative Nutzung."
+        );
+      }
+
+      if (q7 >= 3) {
+        positive.push(
+          "Die Person achtet meistens oder sehr gut auf private Daten."
+        );
+      } else {
+        kritisch.push(
+          "Beim Schutz privater Daten besteht ein deutlicher Gesprächsbedarf. Persönliche Informationen und Bilder sollten nicht unüberlegt veröffentlicht werden."
+        );
+        gespraechsfragen.push(
+          "Welche Daten sollten niemals öffentlich geteilt werden?"
+        );
+      }
+
+      if (q8 >= 3) {
+        kritisch.push(
+          "Soziale Medien erzeugen manchmal oder oft Druck. Vergleiche, Likes und Kommentare können das Wohlbefinden belasten."
+        );
+        gespraechsfragen.push(
+          "Was hilft, wenn soziale Medien Stress oder Druck auslösen?"
+        );
+      } else {
+        positive.push(
+          "Es wird selten oder nie Druck durch soziale Medien erlebt."
+        );
+      }
+
+      if (q9 >= 3) {
+        kritisch.push(
+          "Soziale Medien stören manchmal oder oft den Schlaf. Eine feste Bildschirm-Pause vor dem Schlafengehen kann hilfreich sein."
+        );
+        gespraechsfragen.push(
+          "Welche Regel könnte den Schlaf schützen?"
+        );
+      } else {
+        positive.push(
+          "Der Schlaf wird durch soziale Medien selten oder nie gestört."
+        );
+      }
+
+      if (q10 >= 3) {
+        kritisch.push(
+          "Beleidigende Inhalte oder Cybermobbing werden manchmal oder oft erlebt. Das sollte ernst genommen werden. Betroffene sollten sich Unterstützung bei einer vertrauten Person holen."
+        );
+        gespraechsfragen.push(
+          "Wer kann bei Beleidigungen, Drohungen oder Cybermobbing helfen?"
+        );
+      } else if (q10 === 2) {
+        achten.push(
+          "Es wurde schon einmal ein beleidigender Inhalt erlebt. Wichtig sind Melden, Blockieren und das Gespräch mit einer Vertrauensperson."
+        );
+      } else {
+        positive.push(
+          "Es wurden bisher keine beleidigenden Inhalte erlebt."
+        );
+      }
+
+      if (q11 >= 3) {
+        positive.push(
+          "Es sind bereits sinnvolle Reaktionen auf verletzende Inhalte bekannt."
+        );
+      } else {
+        achten.push(
+          "Es ist noch nicht ganz klar, was bei verletzenden Inhalten getan werden kann."
+        );
+        gespraechsfragen.push(
+          "Wie funktionieren Melden und Blockieren?"
+        );
+      }
+
+      if (q12 >= 3) {
+        positive.push(
+          "Es gibt Regeln oder Absprachen zur Nutzung sozialer Medien."
+        );
+      } else {
+        achten.push(
+          "Es gibt nur wenige oder keine Regeln. Gemeinsame Regeln können bei Zeit, Schlaf und Datenschutz helfen."
+        );
+      }
+
+      let gesamtklasse = "positiv";
+      let gesamtTitel = "Überwiegend positive Tendenzen";
+      let gesamtText =
+        "Die Antworten zeigen mehrere sichere oder bewusste Umgangsweisen mit sozialen Medien.";
+
+      if (kritisch.length >= 3) {
+        gesamtklasse = "kritisch";
+        gesamtTitel = "Mehrere kritische Tendenzen";
+        gesamtText =
+          "Die Antworten weichen bei mehreren Punkten deutlich in eine problematische Richtung ab. Ein ruhiges, wertschätzendes Gespräch und konkrete Hilfsangebote sind sinnvoll.";
+      } else if (kritisch.length >= 1 || achten.length >= 2) {
+        gesamtklasse = "achtung";
+        gesamtTitel = "Einige Punkte verdienen Aufmerksamkeit";
+        gesamtText =
+          "Es gibt positive Ansätze. Gleichzeitig sollten einzelne Themen genauer besprochen und passende Regeln oder Unterstützungsangebote entwickelt werden.";
+      }
+
+      let html = `
+        <div class="ergebnis ${gesamtklasse}">
+          <strong>${gesamtTitel}</strong>
+          <span>${gesamtText}</span>
+        </div>
+      `;
+
+      if (positive.length > 0) {
+        html += `
+          <div class="ergebnis positiv">
+            <strong>Positive Tendenzen</strong>
+            <ul>
+              \({positive.map(text => `\){text}</li>`).join("")}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (achten.length > 0) {
+        html += `
+          <div class="ergebnis achtung">
+            <strong>Beobachten und besprechen</strong>
+            <ul>
+              \({achten.map(text => `\){text}</li>`).join("")}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (kritisch.length > 0) {
+        html += `
+          <div class="ergebnis kritisch">
+            <strong>Kritische Hinweise</strong>
+            <ul>
+              \({kritisch.map(text => `
