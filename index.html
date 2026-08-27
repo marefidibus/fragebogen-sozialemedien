@@ -763,231 +763,271 @@
   </footer>
 
   <script>
-    const formular = document.getElementById("umfrageForm");
-    const auswertung = document.getElementById("auswertung");
-    const gesamtFeedback = document.getElementById("gesamtFeedback");
-    const gespraech = document.getElementById("gespraech");
-    const fortschritt = document.getElementById("fortschritt");
-    const fortschrittText = document.getElementById("fortschrittText");
+  const formular = document.getElementById("umfrageForm");
+  const auswertung = document.getElementById("auswertung");
+  const gesamtFeedback = document.getElementById("gesamtFeedback");
+  const gespraech = document.getElementById("gespraech");
+  const fortschritt = document.getElementById("fortschritt");
+  const fortschrittText = document.getElementById("fortschrittText");
+  const resetButton = document.getElementById("zuruecksetzen");
 
-    const frageAnzahl = 13;
+  const anzahlFragen = 13;
 
-    function wert(name) {
-      const element = document.querySelector(`input[name="${name}"]:checked`);
-      return element ? element.value : null;
+  function ausgewaehlterWert(name) {
+    const auswahl = document.querySelector(
+      'input[name="' + name + '"]:checked'
+    );
+
+    return auswahl ? auswahl.value : "";
+  }
+
+  function fortschrittAktualisieren() {
+    let beantwortet = 0;
+
+    for (let i = 1; i <= anzahlFragen; i++) {
+      const auswahl = document.querySelector(
+        'input[name="q' + i + '"]:checked'
+      );
+
+      if (auswahl) {
+        beantwortet++;
+      }
     }
 
-    function aktualisiereFortschritt() {
-      let beantwortet = 0;
+    fortschritt.value = beantwortet;
+    fortschrittText.textContent =
+      beantwortet + " von " + anzahlFragen + " Fragen beantwortet";
+  }
 
-      for (let i = 1; i <= frageAnzahl; i++) {
-        const radio = document.querySelector(`input[name="q${i}"]:checked`);
-        const checkbox = document.querySelectorAll(`input[name="q${i}"]:checked`);
+  formular.addEventListener("change", fortschrittAktualisieren);
 
-        if (radio || checkbox.length > 0) {
-          beantwortet++;
-        }
-      }
+  formular.addEventListener("submit", function(event) {
+    event.preventDefault();
 
-      fortschritt.value = beantwortet;
-      fortschrittText.textContent =
-        `${beantwortet} von ${frageAnzahl} Fragen beantwortet`;
+    if (!formular.checkValidity()) {
+      formular.reportValidity();
+      return;
     }
 
-    document.querySelectorAll("input").forEach((element) => {
-      element.addEventListener("change", aktualisiereFortschritt);
-    });
+    const nutzungszeit = Number(ausgewaehlterWert("q1"));
+    const informationenPruefen = Number(ausgewaehlterWert("q5"));
+    const privatsphaere = Number(ausgewaehlterWert("q7"));
+    const druck = Number(ausgewaehlterWert("q8"));
+    const schlaf = Number(ausgewaehlterWert("q9"));
+    const beleidigungen = Number(ausgewaehlterWert("q10"));
+    const hilfe = Number(ausgewaehlterWert("q11"));
+    const regeln = Number(ausgewaehlterWert("q12"));
 
-    formular.addEventListener("submit", function(event) {
-      event.preventDefault();
+    const positiveHinweise = [];
+    const achtungHinweise = [];
+    const kritischeHinweise = [];
+    const gespraechsfragen = [];
 
-      const q1 = Number(wert("q1"));
-      const q4 = Number(wert("q4"));
-      const q5 = Number(wert("q5"));
-      const q6 = Number(wert("q6"));
-      const q7 = Number(wert("q7"));
-      const q8 = Number(wert("q8"));
-      const q9 = Number(wert("q9"));
-      const q10 = Number(wert("q10"));
-      const q11 = Number(wert("q11"));
-      const q12 = Number(wert("q12"));
+    if (nutzungszeit <= 3) {
+      positiveHinweise.push(
+        "Die tägliche Nutzungszeit liegt nicht im höchsten Bereich."
+      );
+    } else {
+      kritischeHinweise.push(
+        "Die Nutzung liegt bei mehr als vier Stunden am Tag. Es sollte über Pausen, Schlaf und andere Freizeitaktivitäten gesprochen werden."
+      );
 
-      const positive = [];
-      const achten = [];
-      const kritisch = [];
-      const gespraechsfragen = [];
+      gespraechsfragen.push(
+        "Welche Apps nehmen besonders viel Zeit ein?"
+      );
+    }
 
-      /*
-        Die folgenden Werte sind Orientierungswerte.
-        Sie bilden keine exakten Prozentwerte der JIM-Studie ab.
-      */
+    if (informationenPruefen >= 3) {
+      positiveHinweise.push(
+        "Informationen werden zumindest manchmal überprüft. Das ist wichtig, um Falschmeldungen zu erkennen."
+      );
+    } else {
+      kritischeHinweise.push(
+        "Informationen werden selten oder nie überprüft. Hier besteht ein erhöhtes Risiko für Falschmeldungen."
+      );
 
-      if (q1 <= 3) {
-        positive.push(
-          "Die tägliche Nutzungszeit liegt nicht im besonders hohen Bereich."
-        );
-      } else {
-        kritisch.push(
-          "Die tägliche Nutzungszeit liegt bei mehr als vier Stunden. Das kann auf eine sehr starke Einbindung sozialer Medien hinweisen. Es sollte gemeinsam über Pausen, Schlaf und andere Aktivitäten gesprochen werden."
-        );
-        gespraechsfragen.push(
-          "Welche Apps nehmen besonders viel Zeit ein?"
-        );
-      }
+      gespraechsfragen.push(
+        "Wie kann man prüfen, ob eine Information stimmt?"
+      );
+    }
 
-      if (q4 >= 3) {
-        positive.push(
-          "Soziale Medien werden auch zur Information über aktuelle Themen genutzt."
-        );
-      }
+    if (privatsphaere >= 3) {
+      positiveHinweise.push(
+        "Die Person achtet meistens oder sehr gut auf private Daten."
+      );
+    } else {
+      kritischeHinweise.push(
+        "Beim Schutz privater Daten besteht Gesprächsbedarf."
+      );
 
-      if (q5 >= 3) {
-        positive.push(
-          "Informationen werden zumindest manchmal überprüft. Das ist eine wichtige Fähigkeit gegen Falschmeldungen."
-        );
-      } else {
-        kritisch.push(
-          "Informationen werden selten oder nie überprüft. Hier besteht ein erhöhtes Risiko, dass Falschmeldungen oder Werbung für wahr gehalten werden."
-        );
-        gespraechsfragen.push(
-          "Welche Quellen könnten beim Prüfen einer Information helfen?"
-        );
-      }
+      gespraechsfragen.push(
+        "Welche persönlichen Daten sollten nicht öffentlich geteilt werden?"
+      );
+    }
 
-      if (q6 >= 3) {
-        positive.push(
-          "Es werden eigene Inhalte erstellt. Das zeigt eine aktive und kreative Nutzung."
-        );
-      }
+    if (druck >= 3) {
+      kritischeHinweise.push(
+        "Soziale Medien erzeugen manchmal oder oft Druck. Likes, Kommentare und Vergleiche können das Wohlbefinden belasten."
+      );
 
-      if (q7 >= 3) {
-        positive.push(
-          "Die Person achtet meistens oder sehr gut auf private Daten."
-        );
-      } else {
-        kritisch.push(
-          "Beim Schutz privater Daten besteht ein deutlicher Gesprächsbedarf. Persönliche Informationen und Bilder sollten nicht unüberlegt veröffentlicht werden."
-        );
-        gespraechsfragen.push(
-          "Welche Daten sollten niemals öffentlich geteilt werden?"
-        );
-      }
+      gespraechsfragen.push(
+        "Was hilft, wenn soziale Medien Stress oder Druck auslösen?"
+      );
+    } else {
+      positiveHinweise.push(
+        "Es wird selten oder nie Druck durch soziale Medien erlebt."
+      );
+    }
 
-      if (q8 >= 3) {
-        kritisch.push(
-          "Soziale Medien erzeugen manchmal oder oft Druck. Vergleiche, Likes und Kommentare können das Wohlbefinden belasten."
-        );
-        gespraechsfragen.push(
-          "Was hilft, wenn soziale Medien Stress oder Druck auslösen?"
-        );
-      } else {
-        positive.push(
-          "Es wird selten oder nie Druck durch soziale Medien erlebt."
-        );
-      }
+    if (schlaf >= 3) {
+      kritischeHinweise.push(
+        "Soziale Medien stören manchmal oder oft den Schlaf."
+      );
 
-      if (q9 >= 3) {
-        kritisch.push(
-          "Soziale Medien stören manchmal oder oft den Schlaf. Eine feste Bildschirm-Pause vor dem Schlafengehen kann hilfreich sein."
-        );
-        gespraechsfragen.push(
-          "Welche Regel könnte den Schlaf schützen?"
-        );
-      } else {
-        positive.push(
-          "Der Schlaf wird durch soziale Medien selten oder nie gestört."
-        );
-      }
+      gespraechsfragen.push(
+        "Welche Regel könnte den Schlaf schützen?"
+      );
+    } else {
+      positiveHinweise.push(
+        "Der Schlaf wird durch soziale Medien selten oder nie gestört."
+      );
+    }
 
-      if (q10 >= 3) {
-        kritisch.push(
-          "Beleidigende Inhalte oder Cybermobbing werden manchmal oder oft erlebt. Das sollte ernst genommen werden. Betroffene sollten sich Unterstützung bei einer vertrauten Person holen."
-        );
-        gespraechsfragen.push(
-          "Wer kann bei Beleidigungen, Drohungen oder Cybermobbing helfen?"
-        );
-      } else if (q10 === 2) {
-        achten.push(
-          "Es wurde schon einmal ein beleidigender Inhalt erlebt. Wichtig sind Melden, Blockieren und das Gespräch mit einer Vertrauensperson."
-        );
-      } else {
-        positive.push(
-          "Es wurden bisher keine beleidigenden Inhalte erlebt."
-        );
-      }
+    if (beleidigungen >= 3) {
+      kritischeHinweise.push(
+        "Beleidigende Inhalte oder Cybermobbing werden manchmal oder oft erlebt. Das sollte ernst genommen werden."
+      );
 
-      if (q11 >= 3) {
-        positive.push(
-          "Es sind bereits sinnvolle Reaktionen auf verletzende Inhalte bekannt."
-        );
-      } else {
-        achten.push(
-          "Es ist noch nicht ganz klar, was bei verletzenden Inhalten getan werden kann."
-        );
-        gespraechsfragen.push(
-          "Wie funktionieren Melden und Blockieren?"
-        );
-      }
+      gespraechsfragen.push(
+        "Wer kann bei Beleidigungen oder Cybermobbing helfen?"
+      );
+    } else if (beleidigungen === 2) {
+      achtungHinweise.push(
+        "Es wurde schon einmal ein beleidigender Inhalt erlebt. Melden, Blockieren und das Gespräch mit einer Vertrauensperson können helfen."
+      );
+    } else {
+      positiveHinweise.push(
+        "Es wurden bisher keine beleidigenden Inhalte erlebt."
+      );
+    }
 
-      if (q12 >= 3) {
-        positive.push(
-          "Es gibt Regeln oder Absprachen zur Nutzung sozialer Medien."
-        );
-      } else {
-        achten.push(
-          "Es gibt nur wenige oder keine Regeln. Gemeinsame Regeln können bei Zeit, Schlaf und Datenschutz helfen."
-        );
-      }
+    if (hilfe >= 3) {
+      positiveHinweise.push(
+        "Es sind sinnvolle Reaktionen auf verletzende Inhalte bekannt."
+      );
+    } else {
+      achtungHinweise.push(
+        "Es ist noch nicht ganz klar, was bei verletzenden Inhalten getan werden kann."
+      );
 
-      let gesamtklasse = "positiv";
-      let gesamtTitel = "Überwiegend positive Tendenzen";
-      let gesamtText =
-        "Die Antworten zeigen mehrere sichere oder bewusste Umgangsweisen mit sozialen Medien.";
+      gespraechsfragen.push(
+        "Wie funktionieren Melden und Blockieren?"
+      );
+    }
 
-      if (kritisch.length >= 3) {
-        gesamtklasse = "kritisch";
-        gesamtTitel = "Mehrere kritische Tendenzen";
-        gesamtText =
-          "Die Antworten weichen bei mehreren Punkten deutlich in eine problematische Richtung ab. Ein ruhiges, wertschätzendes Gespräch und konkrete Hilfsangebote sind sinnvoll.";
-      } else if (kritisch.length >= 1 || achten.length >= 2) {
-        gesamtklasse = "achtung";
-        gesamtTitel = "Einige Punkte verdienen Aufmerksamkeit";
-        gesamtText =
-          "Es gibt positive Ansätze. Gleichzeitig sollten einzelne Themen genauer besprochen und passende Regeln oder Unterstützungsangebote entwickelt werden.";
-      }
+    if (regeln >= 3) {
+      positiveHinweise.push(
+        "Es gibt Regeln oder Absprachen zur Nutzung sozialer Medien."
+      );
+    } else {
+      achtungHinweise.push(
+        "Es gibt wenige oder keine Regeln. Gemeinsame Regeln können bei Zeit, Schlaf und Datenschutz helfen."
+      );
+    }
 
-      let html = `
-        <div class="ergebnis ${gesamtklasse}">
-          <strong>${gesamtTitel}</strong>
-          <span>${gesamtText}</span>
+    let gesamtklasse = "positiv";
+    let gesamtTitel = "Überwiegend positive Tendenzen";
+    let gesamtText =
+      "Die Antworten zeigen mehrere sichere oder bewusste Umgangsweisen mit sozialen Medien.";
+
+    if (kritischeHinweise.length >= 3) {
+      gesamtklasse = "kritisch";
+      gesamtTitel = "Mehrere kritische Tendenzen";
+      gesamtText =
+        "Mehrere Antworten weichen deutlich in eine problematische Richtung ab. Ein ruhiges und wertschätzendes Gespräch ist sinnvoll.";
+    } else if (
+      kritischeHinweise.length >= 1 ||
+      achtungHinweise.length >= 2
+    ) {
+      gesamtklasse = "achtung";
+      gesamtTitel = "Einige Punkte verdienen Aufmerksamkeit";
+      gesamtText =
+        "Es gibt positive Ansätze. Einzelne Themen sollten jedoch genauer besprochen werden.";
+    }
+
+    let ausgabe = `
+      <div class="ergebnis ${gesamtklasse}">
+        <strong>${gesamtTitel}</strong>
+        <span>${gesamtText}</span>
+      </div>
+    `;
+
+    if (positiveHinweise.length > 0) {
+      ausgabe += `
+        <div class="ergebnis positiv">
+          <strong>Positive Tendenzen</strong>
+          <ul>
+            ${positiveHinweise.map(text => "<li>" + text + "</li>").join("")}
+          </ul>
         </div>
       `;
+    }
 
-      if (positive.length > 0) {
-        html += `
-          <div class="ergebnis positiv">
-            <strong>Positive Tendenzen</strong>
-            <ul>
-              \({positive.map(text => `\){text}</li>`).join("")}
-            </ul>
-          </div>
-        `;
-      }
+    if (achtungHinweise.length > 0) {
+      ausgabe += `
+        <div class="ergebnis achtung">
+          <strong>Beobachten und besprechen</strong>
+          <ul>
+            ${achtungHinweise.map(text => "<li>" + text + "</li>").join("")}
+          </ul>
+        </div>
+      `;
+    }
 
-      if (achten.length > 0) {
-        html += `
-          <div class="ergebnis achtung">
-            <strong>Beobachten und besprechen</strong>
-            <ul>
-              \({achten.map(text => `\){text}</li>`).join("")}
-            </ul>
-          </div>
-        `;
-      }
+    if (kritischeHinweise.length > 0) {
+      ausgabe += `
+        <div class="ergebnis kritisch">
+          <strong>Kritische Hinweise</strong>
+          <ul>
+            ${kritischeHinweise.map(text => "<li>" + text + "</li>").join("")}
+          </ul>
+        </div>
+      `;
+    }
 
-      if (kritisch.length > 0) {
-        html += `
-          <div class="ergebnis kritisch">
-            <strong>Kritische Hinweise</strong>
-            <ul>
-              \({kritisch.map(text => `
+    gesamtFeedback.innerHTML = ausgabe;
+
+    if (gespraechsfragen.length === 0) {
+      gespraech.innerHTML = `
+        <li>Welche Nutzung macht dir besonders viel Spaß?</li>
+        <li>Welche Tipps würdest du anderen Jugendlichen geben?</li>
+      `;
+    } else {
+      gespraech.innerHTML = gespraechsfragen
+        .map(frage => "<li>" + frage + "</li>")
+        .join("");
+    }
+
+    auswertung.style.display = "block";
+    auswertung.scrollIntoView({ behavior: "smooth" });
+  });
+
+  resetButton.addEventListener("click", function() {
+    setTimeout(function() {
+      auswertung.style.display = "none";
+      fortschrittAktualisieren();
+    }, 50);
+  });
+
+  function neueUmfrage() {
+    formular.reset();
+    auswertung.style.display = "none";
+    fortschrittAktualisieren();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  fortschrittAktualisieren();
+</script>
